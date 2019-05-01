@@ -11,8 +11,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PreDestroy;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,11 +31,12 @@ public class NettyClient {
     private ClientHandler clientHandler;
     private String host;
     private Integer port;
+    private static final int MAX_RETRY = 5;
     public NettyClient(String host, Integer port) {
         this.host = host;
         this.port = port;
     }
-    public void connect() {
+    public void connect() throws InterruptedException {
         clientHandler = new ClientHandler();
         eventLoopGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
@@ -39,6 +44,7 @@ public class NettyClient {
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS,5000)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
@@ -49,20 +55,36 @@ public class NettyClient {
                         pipeline.addLast(clientHandler);
                     }
                 });
-        try {
-            ChannelFuture future = bootstrap.connect(host, port).sync();
-            if (future.isSuccess()) {
-                log.info("连接Netty服务端成功");
-            } else {
-                log.info("连接失败，进行断线重连");
-                future.channel().eventLoop().schedule(() -> connect(), 20, TimeUnit.SECONDS);
-            }
-            channel = future.channel();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        connect(bootstrap, host, port, MAX_RETRY);
+        ChannelFuture future = bootstrap.connect(host, port).sync();
+        channel = future.channel();
     }
 
+    /**
+     * 失败重连机制，参考Netty入门实战掘金小册
+     *
+     * @param bootstrap
+     * @param host
+     * @param port
+     * @param retry
+     */
+    private void connect(Bootstrap bootstrap, String host, int port, int retry) {
+        ChannelFuture channelFuture = bootstrap.connect(host, port).addListener(future -> {
+            if (future.isSuccess()) {
+                log.info("连接服务端成功");
+            } else if (retry == 0) {
+                log.error("重试次数已用完，放弃连接");
+            } else {
+                //第几次重连：
+                int order = (MAX_RETRY - retry) + 1;
+                //本次重连的间隔
+                int delay = 1 << order;
+                log.error("{} : 连接失败，第 {} 重连....", new Date(), order);
+                bootstrap.config().group().schedule(() -> connect(bootstrap, host, port, retry - 1), delay, TimeUnit.SECONDS);
+            }
+        });
+        channel = channelFuture.channel();
+    }
     public RpcResponse send(final RpcRequest request) {
         try {
             channel.writeAndFlush(request).await();
@@ -71,7 +93,7 @@ public class NettyClient {
         }
         return clientHandler.getRpcResponse(request.getRequestId());
     }
-
+    @PreDestroy
     public void close() {
         eventLoopGroup.shutdownGracefully();
         channel.closeFuture().syncUninterruptibly();

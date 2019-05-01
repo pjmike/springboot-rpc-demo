@@ -39,7 +39,7 @@ public class ClientHandler extends ChannelDuplexHandler {
     public RpcResponse getRpcResponse(String requsetId) {
         try {
             DefaultFuture future = futureMap.get(requsetId);
-            return future.getRpcResponse(20);
+            return future.getRpcResponse(5000);
         } finally {
             futureMap.remove(requsetId);
         }

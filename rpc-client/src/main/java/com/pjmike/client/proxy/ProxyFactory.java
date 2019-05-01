@@ -8,7 +8,7 @@ import java.lang.reflect.Proxy;
  * @create: 2019/04/07 17:01
  */
 public class ProxyFactory {
-    public static <T> T create(Class<T> interfaceClass) {
+    public static <T> T create(Class<T> interfaceClass) throws Exception {
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(),new Class<?>[] {interfaceClass}, new RpcClientDynamicProxy<T>(interfaceClass));
     }
 }

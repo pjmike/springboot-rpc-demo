@@ -5,13 +5,12 @@ import com.pjmike.common.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 @Slf4j
 public class ClientApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SpringApplication.run(ClientApplication.class, args);
 //        ConfigurableApplicationContext context = SpringApplication.run(ClientApplication.class, args);
 //        HelloService helloService = context.getBean(HelloService.class);
