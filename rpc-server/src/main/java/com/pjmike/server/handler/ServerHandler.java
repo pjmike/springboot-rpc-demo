@@ -26,7 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> implements ApplicationContextAware {
     private ApplicationContext applicationContext;
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) {
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(msg.getRequestId());
         try {

@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 public class RpcClientDynamicProxy<T> implements InvocationHandler {
     private Class<T> clazz;
-    private ServiceDiscover discover = new ZkServiceDiscover("39.106.63.214:2181");
+//    private ServiceDiscover discover = new ZkServiceDiscover("127.0.0.1:2181");
     public RpcClientDynamicProxy(Class<T> clazz) throws Exception {
         this.clazz = clazz;
     }
@@ -44,11 +44,11 @@ public class RpcClientDynamicProxy<T> implements InvocationHandler {
         request.setParameters(args);
         log.info("请求内容: {}",request);
 
-        String address = discover.discover();
-        String[] arrays = address.split(":");
-        String host = arrays[0];
-        int port = Integer.parseInt(arrays[1]);
-        NettyClient nettyClient = new NettyClient(host, port);
+//        String address = discover.discover();
+//        String[] arrays = address.split(":");
+//        String host = arrays[0];
+//        int port = Integer.parseInt(arrays[1]);
+        NettyClient nettyClient = new NettyClient("127.0.0.1", 8888);
         log.info("开始连接服务端：{}",new Date());
         nettyClient.connect();
         RpcResponse send = nettyClient.send(request);

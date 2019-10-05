@@ -21,7 +21,7 @@
         <module>rpc-client</module>
         <module>rpc-server</module>
         <module>rpc-common</module>
-    </modules>
+        </modules>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

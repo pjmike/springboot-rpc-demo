@@ -2,7 +2,7 @@ package com.pjmike.common.bean;
 
 /**
  * @description: 常量
- * @author: 13572
+ * @author: pjmike
  * @create: 2019/04/29 22:13
  */
 public class Constant {

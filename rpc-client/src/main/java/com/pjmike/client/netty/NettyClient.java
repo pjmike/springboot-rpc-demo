@@ -4,6 +4,7 @@ import com.pjmike.common.protocol.RpcDecoder;
 import com.pjmike.common.protocol.RpcEncoder;
 import com.pjmike.common.protocol.RpcRequest;
 import com.pjmike.common.protocol.RpcResponse;
+import com.pjmike.common.protocol.serialize.JSONSerializer;
 import com.pjmike.common.protocol.serialize.KryoSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -36,11 +37,13 @@ public class NettyClient {
         this.host = host;
         this.port = port;
     }
-    public void connect() throws InterruptedException {
+    public void connect() {
         clientHandler = new ClientHandler();
         eventLoopGroup = new NioEventLoopGroup();
+        //启动类
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
+                //指定传输使用的Channel
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
@@ -50,14 +53,14 @@ public class NettyClient {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new LengthFieldBasedFrameDecoder(65535, 0, 4));
-                        pipeline.addLast(new RpcEncoder(RpcRequest.class, new KryoSerializer()));
-                        pipeline.addLast(new RpcDecoder(RpcResponse.class, new KryoSerializer()));
+                        pipeline.addLast(new RpcEncoder(RpcRequest.class, new JSONSerializer()));
+                        pipeline.addLast(new RpcDecoder(RpcResponse.class, new JSONSerializer()));
                         pipeline.addLast(clientHandler);
                     }
                 });
-//        connect(bootstrap, host, port, MAX_RETRY);
-        ChannelFuture future = bootstrap.connect(host, port).sync();
-        channel = future.channel();
+        connect(bootstrap, host, port, MAX_RETRY);
+//        ChannelFuture future = bootstrap.connect(host, port).sync();
+//        channel = future.channel();
     }
 
     /**
@@ -85,6 +88,13 @@ public class NettyClient {
         });
         channel = channelFuture.channel();
     }
+
+    /**
+     * 发送消息
+     *
+     * @param request
+     * @return
+     */
     public RpcResponse send(final RpcRequest request) {
         try {
             channel.writeAndFlush(request).await();

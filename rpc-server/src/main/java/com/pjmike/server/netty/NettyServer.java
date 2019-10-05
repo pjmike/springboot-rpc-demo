@@ -42,7 +42,7 @@ public class NettyServer implements InitializingBean {
     private ServerHandler serverHandler;
     @Override
     public void afterPropertiesSet() throws Exception {
-        ServiceRegistry registry = new ZkServiceRegistry("39.106.63.214:2181");
+        ServiceRegistry registry = new ZkServiceRegistry("127.0.0.1:2181");
         start(registry);
     }
 
@@ -58,16 +58,22 @@ public class NettyServer implements InitializingBean {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new LengthFieldBasedFrameDecoder(65535, 0, 4));
-                        pipeline.addLast(new RpcEncoder(RpcResponse.class, new KryoSerializer()));
-                        pipeline.addLast(new RpcDecoder(RpcRequest.class, new KryoSerializer()));
+                        pipeline.addLast(new RpcEncoder(RpcResponse.class, new JSONSerializer()));
+                        pipeline.addLast(new RpcDecoder(RpcRequest.class, new JSONSerializer()));
                         pipeline.addLast(serverHandler);
 
                     }
                 });
-        bind(serverBootstrap, 8887);
-        registry.registry("127.0.0.1:8887");
+        bind(serverBootstrap, 8888);
+//        registry.registry("127.0.0.1:8888");
     }
 
+    /**
+     * 如果端口绑定失败，端口数+1,重新绑定
+     *
+     * @param serverBootstrap
+     * @param port
+     */
     public void bind(final ServerBootstrap serverBootstrap,int port) {
         serverBootstrap.bind(port).addListener(future -> {
             if (future.isSuccess()) {
