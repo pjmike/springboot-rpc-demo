@@ -640,7 +640,6 @@ public class HelloServiceImpl implements HelloService {
 以上我们基于Netty实现了一个非非非常简陋的RPC框架，比起成熟的RPC框架来说相差甚远，甚至说基本的注册中心都没有实现，但是通过本次实践，可以说我对于RPC的理解更深了，了解了一个RPC框架到底需要关注哪些方面，未来当我们使用成熟的RPC框架时，比如Dubbo，能够做到心中有数，能明白其底层不过也是使用Netty作为基础通讯框架。往后，如果更深入翻看开源RPC框架源码时，也相对比较容易
 
 
-项目地址： 
 ## 参考资料 & 鸣谢
 
 - https://xilidou.com/2018/09/26/dourpc-remoting/
