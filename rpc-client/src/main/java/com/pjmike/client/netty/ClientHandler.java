@@ -44,16 +44,16 @@ public class ClientHandler extends ChannelDuplexHandler {
     /**
      * 获取响应结果
      *
-     * @param requsetId
+     * @param requestId
      * @return
      */
-    public RpcResponse getRpcResponse(String requsetId) {
+    public RpcResponse getRpcResponse(String requestId) {
         try {
-            DefaultFuture future = futureMap.get(requsetId);
+            DefaultFuture future = futureMap.get(requestId);
             return future.getRpcResponse(10);
         } finally {
             //获取成功以后，从map中移除
-            futureMap.remove(requsetId);
+            futureMap.remove(requestId);
         }
     }
 }

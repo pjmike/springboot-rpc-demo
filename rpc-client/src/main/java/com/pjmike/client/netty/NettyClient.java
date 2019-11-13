@@ -5,15 +5,13 @@ import com.pjmike.common.protocol.RpcEncoder;
 import com.pjmike.common.protocol.RpcRequest;
 import com.pjmike.common.protocol.RpcResponse;
 import com.pjmike.common.protocol.serialize.JSONSerializer;
-import com.pjmike.common.protocol.serialize.KryoSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
+
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PreDestroy;

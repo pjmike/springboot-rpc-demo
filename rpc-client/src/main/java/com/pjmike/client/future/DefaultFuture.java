@@ -4,7 +4,8 @@ package com.pjmike.client.future;
 import com.pjmike.common.protocol.RpcResponse;
 
 /**
- * @description:
+ * @description: 自定义实现Future
+ *
  * @author: pjmike
  * @create: 2019/04/07 16:34
  */
