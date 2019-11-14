@@ -4,7 +4,11 @@ import com.pjmike.common.protocol.RpcResponse;
 import io.netty.util.concurrent.DefaultPromise;
 
 /**
- * @description: Future模式另一种自定义实现，利用Netty的DefaultPromise
+ * Future有几种模式：
+ * 1. JDK自带的Future: {@link java.util.concurrent.Future}
+ * 2. 自定义Future: 比如{@link DefaultFuture}
+ * 3. 利用Netty的DefaultPromise : {@link DefaultPromise}
+ * 4. Java 8 的 {@link java.util.concurrent.CompletableFuture}
  *
  * @author: pjmike
  * @create: 2019/11/13

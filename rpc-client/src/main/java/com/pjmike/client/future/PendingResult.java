@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author: pjmike
  * @create: 2019/11/13
  */
-public class FutureMapUtils {
+public class PendingResult {
     private Map<String, ResultFuture> map = new ConcurrentHashMap<>();
 
     public void add(String id, ResultFuture future) {
